@@ -1,155 +1,48 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  useColorScheme,
-  Text,
-  View,
-} from 'react-native';
+// @ts-expect-error: @huggingface/transformers is not a TypeScript library
 import { pipeline } from '@huggingface/transformers';
-import { useColor } from './utils/style';
-import InlineSection from './components/form/InlineSection';
-import Section from './components/form/Section';
-import SelectField from './components/form/SelectField';
-import Progress from './components/Progress';
-import Models from './components/models';
-import * as logger from './utils/logger';
+import React from 'react';
+import { Button, Text, View } from 'react-native';
 
-const taskDisplayNames = Object.values(Models).map((model) => model.title);
+export default function App() {
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  const backgroundColor = useColor('background');
-  const color = useColor('foreground');
-  const textColor = { color };
-
-  const [task, setTask] = useState<string | null>(null);
-  const [settings, setSettings] = useState<object>({});
-  const [params, setParams] = useState<object | null>(null);
-  const [download, setDownload] = useState<object>({});
-  const [isLoading, setLoading] = useState<boolean>(false);
-
-  const backgroundStyle = { backgroundColor };
-
-  useEffect(() => {
-    setDownload({});
-    setLoading(false);
-  }, [task]);
-
-  const onProgress  = useCallback((event: any) => {
-    if (event?.file) {
-      const { file, status, progress } = event;
-      setLoading(true);
-      setDownload((prev) => ({
-        ...prev,
-        [file]: { status, progress },
-      }));
-    }
-    if (event?.status === 'ready') {
-      setLoading(false);
-    }
-  }, []);
-
-  const run = useCallback(async (useTask: string, model: string, modelOpt: object, ...args: any[]) => {
-    if (!task || !useTask || !args?.length) return;
+  const handlePress = async () => {
     let pipe;
     try {
-      logger.time('LOAD');
-      pipe = await pipeline(useTask, model, { ...modelOpt, progress_callback: onProgress });
-      logger.timeEnd('LOAD');
-      logger.time('INFER');
-      const result = await pipe._call(...args);
-      logger.timeEnd('INFER');
-      await pipe.dispose();
-      logger.log('Result:', result);
-      return result;
-    } catch (e) {
-      console.error(e.stack);
-      await pipe?.dispose();
-      throw e;
-    }
-  }, [task, onProgress]);
+      pipe = await pipeline('text-generation', 'Xenova/Qwen1.5-0.5B-Chat', {
+        model_file_name: 'decoder_model_merged_quantized',
+        progress_callback: (event: any) => {
+          console.log('Progress:', event);
+        },
+      });
 
-  const SettingsComponent = Models[task]?.Settings;
-  const ParametersComponent = Models[task]?.Parameters;
-  const InteractComponent = Models[task]?.Interact;
+      const history = [
+        { role: 'system', content: 'You are a helpful assistant.' },
+        { role: 'user', content: 'Hi, How are you?' },
+        { role: 'assistant', content: 'Hello! I\'m good, thank you for asking. How can I help you?' },
+        { role: 'user', content: 'Can you explain me what is photosynthesis in a simple way?' },
+      ];
+
+      const result = await pipe(history, {
+        max_new_tokens: 150,       // Máximo de tokens a generar
+        temperature: 0.7,          // Controla la aleatoriedad (más bajo = más determinista)
+        top_k: 50,                 // Considera los k tokens más probables
+        do_sample: true,           // Necesario para que temperature y top_k tengan efecto
+        no_repeat_ngram_size: 3, // Para evitar repeticiones (opcional)
+        //eos_token_id: pipe.tokenizer.getTokenId('<|im_end|>'),
+      });
+
+      console.log('Result:', result);
+    } catch (e: Error | unknown) {
+      if (e instanceof Error) { console.error('Error:', e.message, e.stack); }
+    }
+
+    pipe?.dispose();
+  };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <View style={styles.container}>
-          <Text style={[styles.title, textColor]}># transformers.js</Text>
-          <InlineSection title="Task">
-            <SelectField
-              options={Object.entries(Models).map(([key, value]) => ({
-                label: value.title,
-                value: key,
-              }))}
-              value={task}
-              onChange={(value) => setTask(value)}
-              placeholder="Select a task"
-            />
-          </InlineSection>
-          <InlineSection title="Settings">
-            {SettingsComponent ? (
-              <SettingsComponent onChange={setSettings} />
-            ) : (
-              <Text style={textColor}>Select task first</Text>
-            )}
-          </InlineSection>
-          <InlineSection title="Parameters">
-            {ParametersComponent ? (
-              <ParametersComponent onChange={setParams} />
-            ) : (
-              <Text style={textColor}>N/A</Text>
-            )}
-          </InlineSection>
-          <Section title="Interact">
-            {InteractComponent ? (
-              <InteractComponent settings={settings} params={params} runPipe={run} />
-            ) : (
-              <Text style={textColor}>N/A</Text>
-            )}
-          </Section>
-          {isLoading && (
-            <Section title="Progress">
-              {Object.entries(download).map(([key, { progress, status }]) => (
-                <Progress key={key} title={key} value={progress} status={status} />
-              ))}
-            </Section>
-          )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View>
+      <Text>Hola</Text>
+      <Button title="Probar" onPress={handlePress} />
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  container: {
-    flex: 1,
-    paddingTop: 20,
-    paddingBottom: 80,
-  },
-});
-
-export default App;

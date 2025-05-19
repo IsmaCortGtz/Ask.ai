@@ -1,10 +1,12 @@
 {
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".", // Add this line to enable path mapping
     "paths": {
-      "stream": "stream-browserify",
-      "buffer": "@craftzdog/react-native-buffer",
-      "zlib": "browserify-zlib"
+      "@/*": ["src/*"], // Add this line for @ alias
+      "stream": ["stream-browserify"],
+      "buffer": ["@craftzdog/react-native-buffer"],
+      "zlib": ["browserify-zlib"]
     }
   }
 }
