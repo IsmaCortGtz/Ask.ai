@@ -5,8 +5,10 @@ import Message from '@/components/Message';
 import ChatInput from '@/components/ChatInput';
 import useChat from './useChat';
 import theme from '@/constants/theme';
+import useConfirmBack from '@/hooks/useConfirmBack';
 
 export default function ChatPage() {
+  useConfirmBack();
   const { isLoading, isPreparing, history, handleNewMessage } = useChat();
 
   return (
