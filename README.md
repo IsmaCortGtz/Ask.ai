@@ -23,6 +23,13 @@ This app allows you to run LLMS in local device. You can use a [`text-generation
 
 ## Screenshots 📲
 
+<img src="./docs/screenshots/home.jpg" width="230">
+<img src="./docs/screenshots/download.jpg" width="230">
+<img src="./docs/screenshots/downloading.jpg" width="230">
+<img src="./docs/screenshots/downloaded.jpg" width="230">
+<img src="./docs/screenshots/loading-llm.jpg" width="230">
+<img src="./docs/screenshots/chat.jpg" width="230">
+
 ## Documentation 📕
 
 ### How to develop
