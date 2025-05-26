@@ -7,6 +7,7 @@ import HomePage from '@/pages/Home';
 import theme from '@/constants/theme';
 import DownloadsPage from './pages/Downloads';
 import ChatPage from './pages/Chat';
+import T2extSpeechPage from './pages/T2extSpeech';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -90,6 +91,18 @@ export default function App() {
         component={ChatPage}
         options={{
           title: 'Chat',
+          contentStyle: {
+            borderTopWidth: 1,
+            borderTopColor: theme.accentColor,
+            backgroundColor: theme.accentColor,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="Text2Speech"
+        component={T2extSpeechPage}
+        options={{
+          title: 'Text2Speech',
           contentStyle: {
             borderTopWidth: 1,
             borderTopColor: theme.accentColor,
