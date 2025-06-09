@@ -17,7 +17,7 @@
 Este proyecto utiliza la librería [`huggingface/transformers.js`](https://github.com/huggingface/transformers.js) con algunas correcciones y polyfills para ser compatible con `react-native`.
 
 > [!NOTE]
-> EN este momento (May 2025) la librería [`huggingface/transformers.js`](https://github.com/huggingface/transformers.js) no
+> En este momento (May 2025) la librería [`huggingface/transformers.js`](https://github.com/huggingface/transformers.js) no
 > es compatible con react-native con algun lanzamiento estable, por ello son necesarios los polyfills.
 
 Esta app te permite ejecutar un LLM en tu dispositivo localmente. Puedes usar un modelo de [`text-generation`](https://huggingface.co/tasks/text-generation) en forma de chat. Después de descargar el modelo, puedes usarlo incluso sin conexión a internet.
