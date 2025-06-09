@@ -10,7 +10,7 @@
 </p>
 
 > [!NOTE]
-> THis porject is a `fork` of [`hans00/react-native-transformers-example`](https://github.com/hans00/react-native-transformers-example).
+> This porject is a `fork` of [`hans00/react-native-transformers-example`](https://github.com/hans00/react-native-transformers-example).
 
 ## Description
 
